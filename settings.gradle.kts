@@ -1,0 +1,9 @@
+rootProject.name = "mnetty"
+pluginManagement {
+  repositories {
+    mavenLocal()
+    maven(url = "https://maven.fabricmc.net/")
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}

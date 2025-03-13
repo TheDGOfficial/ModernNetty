@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "mnet",
+  "version": "${version}",
+  "name": "Modern Netty",
+  "description": "ports latest netty features to fabric latest.",
+  "authors": [
+    "luciel"
+  ],
+  "contact": {
+    "homepage": "https://celesteflare.cc/",
+    "sources": "https://git.gay/luciel/mc_mod_mnet"
+  },
+  "license": "Apache 2.0",
+  "icon": "assets/mnet/icon.png",
+  "environment": "*",
+  "entrypoints": {},
+  "mixins": [
+    "mnet.mixins.json"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "cc.luciel.mnet.injection.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "injectors": { "defaultRequire": 1 },
+  "mixins": [
+    "net.minecraft.network.MixinConnection",
+    "net.minecraft.server.network.MixinServerConnectionListener"
+  ]
+}
