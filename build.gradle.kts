@@ -25,7 +25,7 @@ dependencies {
   modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
 
   // soft dependency
-  modCompileOnly("com.viaversion:viafabricplus-api:4.0.3")
+  modCompileOnly("com.viaversion:viafabricplus-api:4.1.1")
 
   val clazzLinux = arrayOf("linux-aarch_64", "linux-riscv64", "linux-x86_64")
   val clazzMac = arrayOf("osx-aarch_64", "osx-x86_64")
