@@ -19,12 +19,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package cc.luciel.mnet.injection.mixins.net.minecraft.network;
+package fyi.stellaris.mnet.injection.mixins;
 
-import cc.luciel.mnet.ModernNetty;
+import fyi.stellaris.mnet.ModernNetty;
 import io.netty.bootstrap.AbstractBootstrap;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOption;
@@ -50,13 +49,11 @@ public abstract class MixinConnection {
       target = "Lio/netty/bootstrap/Bootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/AbstractBootstrap;"
   ))
   private static AbstractBootstrap<Bootstrap, Channel> swapGroupClient(Bootstrap bootstrap, EventLoopGroup group) {
-    if (ModernNetty.vfpIsBedrockSelected()) return bootstrap.group(group);
     return bootstrap
         .option(ChannelOption.AUTO_CLOSE, Boolean.TRUE)
         .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
         .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
-        .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-        .group(ModernNetty.GROUP_CLIENT.get());
+        .group(ModernNetty.shouldDefault() ? group : ModernNetty.GROUP_CLIENT.get());
   }
 
   @Redirect(method = "connect", at = @At(
@@ -64,8 +61,7 @@ public abstract class MixinConnection {
       target = "Lio/netty/bootstrap/Bootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
   ))
   private static AbstractBootstrap<Bootstrap, Channel> swapChannelClient(Bootstrap bootstrap, Class<? extends Channel> clazz) {
-    if (ModernNetty.vfpIsBedrockSelected()) return bootstrap.channel(clazz);
-    return bootstrap.channel(ModernNetty.CHANNEL_CLIENT);
+    return bootstrap.channel(ModernNetty.shouldDefault() ? clazz : ModernNetty.CHANNEL_CLIENT);
   }
 
   @Redirect(method = "connectToLocalServer", at = @At(
@@ -73,13 +69,11 @@ public abstract class MixinConnection {
       target = "Lio/netty/bootstrap/Bootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/AbstractBootstrap;"
   ))
   private static AbstractBootstrap<Bootstrap, Channel> swapGroupServer(Bootstrap bootstrap, EventLoopGroup group) {
-    if (ModernNetty.vfpIsBedrockSelected()) return bootstrap.group(group);
     return bootstrap
         .option(ChannelOption.AUTO_CLOSE, Boolean.TRUE)
         .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
         .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
-        .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-        .group(ModernNetty.GROUP_CLIENT_LOCAL.get());
+        .group(ModernNetty.shouldDefault() ? group : ModernNetty.GROUP_CLIENT_LOCAL.get());
   }
 
   @Redirect(method = "connectToLocalServer", at = @At(
@@ -87,13 +81,16 @@ public abstract class MixinConnection {
       target = "Lio/netty/bootstrap/Bootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
   ))
   private static AbstractBootstrap<Bootstrap, Channel> swapChannelServer(Bootstrap bootstrap, Class<? extends Channel> clazz) {
-    if (ModernNetty.vfpIsBedrockSelected()) return bootstrap.channel(clazz);
-    return bootstrap.channel(ModernNetty.CHANNEL_CLIENT_LOCAL);
+    return bootstrap.channel(ModernNetty.shouldDefault() ? clazz : ModernNetty.CHANNEL_CLIENT_LOCAL);
   }
 
 
   @Inject(method = "exceptionCaught", at = @At(value = "HEAD"))
-  private void injectExceptionCaught(ChannelHandlerContext context, Throwable t, CallbackInfo ci) {
-    LOGGER.warn("netty exception", t);
+  private void injectExceptionCaught(
+      ChannelHandlerContext context,
+      Throwable throwable,
+      CallbackInfo ci
+  ) {
+    LOGGER.warn("netty exception", throwable);
   }
 }

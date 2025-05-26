@@ -1,4 +1,4 @@
-rootProject.name = "mnetty"
+rootProject.name = "mnet"
 pluginManagement {
   repositories {
     mavenLocal()

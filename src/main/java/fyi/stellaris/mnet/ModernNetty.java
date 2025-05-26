@@ -19,7 +19,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package cc.luciel.mnet;
+package fyi.stellaris.mnet;
 
 import com.google.common.base.Suppliers;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -51,57 +51,56 @@ public final class ModernNetty {
   // @formatter:off
   public static final boolean
       IOURING = IoUring.isAvailable(),
-      EPOLL   = Epoll  .isAvailable(),
-      KQUEUE  = KQueue .isAvailable();
+      KQUEUE  = KQueue .isAvailable(),
+      EPOLL   = Epoll  .isAvailable();
 
   public static final Class<LocalChannel> CHANNEL_CLIENT_LOCAL = LocalChannel.class;
   public static final Supplier<MultiThreadIoEventLoopGroup> GROUP_CLIENT_LOCAL = Suppliers.memoize(
       () -> new MultiThreadIoEventLoopGroup(
           new ThreadFactoryBuilder()
               .setNameFormat("Meow Client Local IO #%d")
-              .setThreadFactory(Thread.ofVirtual().factory()).build(),
+              .setThreadFactory(Thread.ofPlatform().daemon(false).factory()).build(),
           LocalIoHandler.newFactory()
       ));
 
   public static final Class<? extends SocketChannel> CHANNEL_CLIENT =
       IOURING ? IoUringSocketChannel.class :
-      EPOLL   ? EpollSocketChannel  .class :
       KQUEUE  ? KQueueSocketChannel .class :
+      EPOLL   ? EpollSocketChannel  .class :
                 NioSocketChannel    .class ;
 
   public static final Supplier<MultiThreadIoEventLoopGroup> GROUP_CLIENT = Suppliers.memoize(
       () -> new MultiThreadIoEventLoopGroup(
           new ThreadFactoryBuilder()
               .setNameFormat("Meow Client IO #%d")
-              .setThreadFactory(Thread.ofVirtual().factory()).build(),
+              .setThreadFactory(Thread.ofPlatform().factory()).build(),
           IOURING ? IoUringIoHandler.newFactory() :
-          EPOLL   ? EpollIoHandler  .newFactory() :
           KQUEUE  ? KQueueIoHandler .newFactory() :
+          EPOLL   ? EpollIoHandler  .newFactory() :
                     NioIoHandler    .newFactory()
       ));
 
-
   public static final Class<? extends ServerSocketChannel> CHANNEL_SERVER =
       IOURING ? IoUringServerSocketChannel.class :
-      EPOLL   ? EpollServerSocketChannel  .class :
       KQUEUE  ? KQueueServerSocketChannel .class :
+      EPOLL   ? EpollServerSocketChannel  .class :
                 NioServerSocketChannel    .class ;
 
   public static final Supplier<MultiThreadIoEventLoopGroup> GROUP_SERVER = Suppliers.memoize(
       () -> new MultiThreadIoEventLoopGroup(
           new ThreadFactoryBuilder()
               .setNameFormat("Meow Client IO #%d")
-              .setThreadFactory(Thread.ofVirtual().factory()).build(),
+              .setThreadFactory(Thread.ofPlatform().daemon(false).factory()).build(),
           IOURING ? IoUringIoHandler.newFactory() :
-          EPOLL   ? EpollIoHandler  .newFactory() :
           KQUEUE  ? KQueueIoHandler .newFactory() :
+          EPOLL   ? EpollIoHandler  .newFactory() :
                     NioIoHandler    .newFactory()
       ));
   // @formatter:on
 
   private static final boolean IS_VFP_EXISTING = FabricLoader.getInstance().isModLoaded("viafabricplus");
 
-  public static boolean vfpIsBedrockSelected() {
+  public static boolean shouldDefault() {
     return IS_VFP_EXISTING && com.viaversion.viafabricplus.ViaFabricPlus.getImpl()
         .getTargetVersion().equals(net.raphimc.viabedrock.api.BedrockProtocolVersion.bedrockLatest);
   }

@@ -19,9 +19,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package cc.luciel.mnet.injection.mixins.net.minecraft.server.network;
+package fyi.stellaris.mnet.injection.mixins;
 
-import cc.luciel.mnet.ModernNetty;
+import fyi.stellaris.mnet.ModernNetty;
 import io.netty.bootstrap.AbstractBootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
@@ -39,8 +39,7 @@ public abstract class MixinServerConnectionListener {
       target = "Lio/netty/bootstrap/ServerBootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/ServerBootstrap;"
   ))
   public ServerBootstrap swapGroupServer(ServerBootstrap bootstrap, EventLoopGroup group) {
-    if (ModernNetty.vfpIsBedrockSelected()) return bootstrap.group(group);
-    return bootstrap.group(ModernNetty.GROUP_SERVER.get());
+    return bootstrap.group(ModernNetty.shouldDefault() ? group : ModernNetty.GROUP_SERVER.get());
   }
 
   @Redirect(method = "startTcpServerListener", at = @At(
@@ -48,8 +47,7 @@ public abstract class MixinServerConnectionListener {
       target = "Lio/netty/bootstrap/ServerBootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
   ))
   public AbstractBootstrap<ServerBootstrap, ServerChannel> swapChannelServer(ServerBootstrap bootstrap, Class<ServerChannel> clazz) {
-    if (ModernNetty.vfpIsBedrockSelected()) return bootstrap.channel(clazz);
-    return bootstrap.channel(ModernNetty.CHANNEL_SERVER);
+    return bootstrap.channel(ModernNetty.shouldDefault() ? clazz : ModernNetty.CHANNEL_SERVER);
   }
 
   @Redirect(method = "startMemoryChannel", at = @At(
@@ -57,8 +55,7 @@ public abstract class MixinServerConnectionListener {
       target = "Lio/netty/bootstrap/ServerBootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/ServerBootstrap;"
   ))
   public ServerBootstrap swapGroupChannels(ServerBootstrap bootstrap, EventLoopGroup group) {
-    if (ModernNetty.vfpIsBedrockSelected()) return bootstrap.group(group);
-    return bootstrap.group(ModernNetty.GROUP_CLIENT_LOCAL.get());
+    return bootstrap.group(ModernNetty.shouldDefault() ? group : ModernNetty.GROUP_CLIENT_LOCAL.get());
   }
 
   @Redirect(method = "startMemoryChannel", at = @At(
@@ -66,7 +63,6 @@ public abstract class MixinServerConnectionListener {
       target = "Lio/netty/bootstrap/ServerBootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
   ))
   public AbstractBootstrap<ServerBootstrap, ServerChannel> swapChannelChannels(ServerBootstrap bootstrap, Class<ServerChannel> clazz) {
-    if (ModernNetty.vfpIsBedrockSelected()) return bootstrap.channel(clazz);
-    return bootstrap.channel(LocalServerChannel.class);
+    return bootstrap.channel(ModernNetty.shouldDefault() ? clazz : LocalServerChannel.class);
   }
 }

@@ -2,7 +2,7 @@ import java.nio.charset.StandardCharsets
 
 plugins {
   id("java")
-  id("fabric-loom") version ("1.10-SNAPSHOT")
+  id("fabric-loom") version ("1.11.0-alpha.10")
 }
 
 group = "cc.luciel"
@@ -36,9 +36,8 @@ dependencies {
 
   nativeLinuxEpollDep.artifacts.addAll(clazzLinux.map { nativeLinuxEpollDep.artifact { classifier = it } })
   nativeMacKqueueDep.artifacts.addAll(clazzMac.map { nativeMacKqueueDep.artifact { classifier = it } })
-  // no risc *sad violin* :(
   nativeLinuxIoUringDep.artifacts
-    .addAll(arrayOf(clazzLinux[0], clazzLinux[2]).map { nativeLinuxIoUringDep.artifact { classifier = it } })
+    .addAll(clazzLinux.map { nativeLinuxIoUringDep.artifact { classifier = it } })
 
   arrayOf(
     libs.bundles.network.all,

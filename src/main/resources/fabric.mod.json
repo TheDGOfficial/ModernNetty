@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "id": "mnet",
-  "version": "1.1.0-release",
+  "version": "1.1.1-release",
   "name": "Modern Netty",
-  "description": "ports latest netty features to fabric latest.",
+  "description": "ports latest netty features to fabric latest in terms of transporting.",
   "authors": [
     "luciel"
   ],
   "contact": {
-    "homepage": "https://celesteflare.cc/",
-    "sources": "https://git.gay/luciel/mc_mod_mnet"
+    "homepage": "https://stellaris.fyi/",
+    "sources": "https://git.celesteflare.cc/stellaris/mod_mnet"
   },
   "license": "Apache 2.0",
   "icon": "assets/mnet/icon.png",

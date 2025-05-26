@@ -3,7 +3,7 @@
 jetbrains-annotations = "26.0.2"
 
 # networking
-netty      = "4.2.0.Final"
+netty      = "4.2.1.Final"
 netty-util = "0.0.9.Final"
 
 [libraries]
