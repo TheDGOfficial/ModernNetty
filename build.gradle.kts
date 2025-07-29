@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "cc.luciel"
-version = "0.0.0-develop"
+version = "1.2.0-release"
 
 repositories {
   mavenLocal()
