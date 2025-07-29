@@ -1,6 +1,6 @@
 /*
- * This file is part of Modern Netty ~ https://git.gay/luciel/mc_mod_mnet
- * Copyright (C) 2025 ~ luciel
+ * This file is part of Modern Netty ~ https://git.celesteflare.cc/stellaris/mod_mnet
+ * Copyright (C) 2025 ~ iouring
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -39,7 +39,7 @@ public abstract class MixinServerConnectionListener {
       target = "Lio/netty/bootstrap/ServerBootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/ServerBootstrap;"
   ))
   public ServerBootstrap swapGroupServer(ServerBootstrap bootstrap, EventLoopGroup group) {
-    return bootstrap.group(ModernNetty.shouldDefault() ? group : ModernNetty.GROUP_SERVER.get());
+    return bootstrap.group(ModernNetty.GROUP_SERVER.get());
   }
 
   @Redirect(method = "startTcpServerListener", at = @At(
@@ -47,7 +47,7 @@ public abstract class MixinServerConnectionListener {
       target = "Lio/netty/bootstrap/ServerBootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
   ))
   public AbstractBootstrap<ServerBootstrap, ServerChannel> swapChannelServer(ServerBootstrap bootstrap, Class<ServerChannel> clazz) {
-    return bootstrap.channel(ModernNetty.shouldDefault() ? clazz : ModernNetty.CHANNEL_SERVER);
+    return bootstrap.channel(ModernNetty.CHANNEL_SERVER);
   }
 
   @Redirect(method = "startMemoryChannel", at = @At(
@@ -55,7 +55,7 @@ public abstract class MixinServerConnectionListener {
       target = "Lio/netty/bootstrap/ServerBootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/ServerBootstrap;"
   ))
   public ServerBootstrap swapGroupChannels(ServerBootstrap bootstrap, EventLoopGroup group) {
-    return bootstrap.group(ModernNetty.shouldDefault() ? group : ModernNetty.GROUP_CLIENT_LOCAL.get());
+    return bootstrap.group(ModernNetty.GROUP_CLIENT_LOCAL.get());
   }
 
   @Redirect(method = "startMemoryChannel", at = @At(
@@ -63,6 +63,6 @@ public abstract class MixinServerConnectionListener {
       target = "Lio/netty/bootstrap/ServerBootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
   ))
   public AbstractBootstrap<ServerBootstrap, ServerChannel> swapChannelChannels(ServerBootstrap bootstrap, Class<ServerChannel> clazz) {
-    return bootstrap.channel(ModernNetty.shouldDefault() ? clazz : LocalServerChannel.class);
+    return bootstrap.channel(LocalServerChannel.class);
   }
 }

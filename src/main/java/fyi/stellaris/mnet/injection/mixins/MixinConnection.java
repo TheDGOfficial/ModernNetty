@@ -1,6 +1,6 @@
 /*
- * This file is part of Modern Netty ~ https://git.gay/luciel/mc_mod_mnet
- * Copyright (C) 2025 ~ luciel
+ * This file is part of Modern Netty ~ https://git.celesteflare.cc/stellaris/mod_mnet
+ * Copyright (C) 2025 ~ iouring
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -24,10 +24,7 @@ package fyi.stellaris.mnet.injection.mixins;
 import fyi.stellaris.mnet.ModernNetty;
 import io.netty.bootstrap.AbstractBootstrap;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import net.minecraft.network.Connection;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -50,10 +47,8 @@ public abstract class MixinConnection {
   ))
   private static AbstractBootstrap<Bootstrap, Channel> swapGroupClient(Bootstrap bootstrap, EventLoopGroup group) {
     return bootstrap
-        .option(ChannelOption.AUTO_CLOSE, Boolean.TRUE)
         .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-        .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
-        .group(ModernNetty.shouldDefault() ? group : ModernNetty.GROUP_CLIENT.get());
+        .group(ModernNetty.GROUP_CLIENT.get());
   }
 
   @Redirect(method = "connect", at = @At(
@@ -61,7 +56,15 @@ public abstract class MixinConnection {
       target = "Lio/netty/bootstrap/Bootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
   ))
   private static AbstractBootstrap<Bootstrap, Channel> swapChannelClient(Bootstrap bootstrap, Class<? extends Channel> clazz) {
-    return bootstrap.channel(ModernNetty.shouldDefault() ? clazz : ModernNetty.CHANNEL_CLIENT);
+    return bootstrap.channel(ModernNetty.CHANNEL_CLIENT);
+  }
+
+  @Redirect(method = "disconnect(Lnet/minecraft/network/DisconnectionDetails;)V", at = @At(
+      value = "INVOKE",
+      target = "Lio/netty/channel/ChannelFuture;awaitUninterruptibly()Lio/netty/channel/ChannelFuture;"
+  ))
+  private static ChannelFuture swapChannelClient(ChannelFuture instance) throws InterruptedException {
+    return instance;
   }
 
   @Redirect(method = "connectToLocalServer", at = @At(
@@ -70,10 +73,8 @@ public abstract class MixinConnection {
   ))
   private static AbstractBootstrap<Bootstrap, Channel> swapGroupServer(Bootstrap bootstrap, EventLoopGroup group) {
     return bootstrap
-        .option(ChannelOption.AUTO_CLOSE, Boolean.TRUE)
         .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-        .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
-        .group(ModernNetty.shouldDefault() ? group : ModernNetty.GROUP_CLIENT_LOCAL.get());
+        .group(ModernNetty.GROUP_CLIENT_LOCAL.get());
   }
 
   @Redirect(method = "connectToLocalServer", at = @At(
@@ -81,7 +82,7 @@ public abstract class MixinConnection {
       target = "Lio/netty/bootstrap/Bootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
   ))
   private static AbstractBootstrap<Bootstrap, Channel> swapChannelServer(Bootstrap bootstrap, Class<? extends Channel> clazz) {
-    return bootstrap.channel(ModernNetty.shouldDefault() ? clazz : ModernNetty.CHANNEL_CLIENT_LOCAL);
+    return bootstrap.channel(ModernNetty.CHANNEL_CLIENT_LOCAL);
   }
 
 

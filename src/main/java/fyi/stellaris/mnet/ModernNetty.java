@@ -1,6 +1,6 @@
 /*
- * This file is part of Modern Netty ~ https://git.gay/luciel/mc_mod_mnet
- * Copyright (C) 2025 ~ luciel
+ * This file is part of Modern Netty ~ https://git.celesteflare.cc/stellaris/mod_mnet
+ * Copyright (C) 2025 ~ iouring
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -43,7 +43,6 @@ import io.netty.channel.uring.IoUring;
 import io.netty.channel.uring.IoUringIoHandler;
 import io.netty.channel.uring.IoUringServerSocketChannel;
 import io.netty.channel.uring.IoUringSocketChannel;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.function.Supplier;
 
@@ -59,7 +58,7 @@ public final class ModernNetty {
       () -> new MultiThreadIoEventLoopGroup(
           new ThreadFactoryBuilder()
               .setNameFormat("Meow Client Local IO #%d")
-              .setThreadFactory(Thread.ofPlatform().daemon(false).factory()).build(),
+              .setThreadFactory(Thread.ofPlatform().daemon(true).factory()).build(),
           LocalIoHandler.newFactory()
       ));
 
@@ -90,18 +89,11 @@ public final class ModernNetty {
       () -> new MultiThreadIoEventLoopGroup(
           new ThreadFactoryBuilder()
               .setNameFormat("Meow Client IO #%d")
-              .setThreadFactory(Thread.ofPlatform().daemon(false).factory()).build(),
+              .setThreadFactory(Thread.ofPlatform().daemon(true).factory()).build(),
           IOURING ? IoUringIoHandler.newFactory() :
           KQUEUE  ? KQueueIoHandler .newFactory() :
           EPOLL   ? EpollIoHandler  .newFactory() :
                     NioIoHandler    .newFactory()
       ));
   // @formatter:on
-
-  private static final boolean IS_VFP_EXISTING = FabricLoader.getInstance().isModLoaded("viafabricplus");
-
-  public static boolean shouldDefault() {
-    return IS_VFP_EXISTING && com.viaversion.viafabricplus.ViaFabricPlus.getImpl()
-        .getTargetVersion().equals(net.raphimc.viabedrock.api.BedrockProtocolVersion.bedrockLatest);
-  }
 }

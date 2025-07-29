@@ -11,9 +11,6 @@ version = "0.0.0-develop"
 repositories {
   mavenLocal()
   mavenCentral()
-  maven(url = "https://repo.viaversion.com")
-  maven(url = "https://maven.lenni0451.net/everything")
-  maven(url = "https://jitpack.io") { content { includeGroup("com.github.Oryxel") } }
 }
 
 dependencies {
@@ -23,9 +20,6 @@ dependencies {
   minecraft("com.mojang:minecraft:${property("minecraft_version")}")
   mappings(loom.officialMojangMappings())
   modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
-
-  // soft dependency
-  modCompileOnly("com.viaversion:viafabricplus-api:4.1.1")
 
   val clazzLinux = arrayOf("linux-aarch_64", "linux-riscv64", "linux-x86_64")
   val clazzMac = arrayOf("osx-aarch_64", "osx-x86_64")
