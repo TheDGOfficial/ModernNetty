@@ -2,10 +2,10 @@ import java.nio.charset.StandardCharsets
 
 plugins {
   id("java")
-  id("fabric-loom") version ("1.11.0-alpha.10")
+  id("fabric-loom") version ("1.14-SNAPSHOT")
 }
 
-group = "cc.luciel"
+group = "pet.liawr"
 version = "1.2.0-release"
 
 repositories {
