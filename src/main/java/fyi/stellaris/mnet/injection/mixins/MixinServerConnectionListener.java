@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(value = ServerConnectionListener.class, priority = 6969)
+@Mixin(value = ServerConnectionListener.class)
 public abstract class MixinServerConnectionListener {
   @Redirect(method = "startTcpServerListener", at = @At(
       value = "INVOKE",
