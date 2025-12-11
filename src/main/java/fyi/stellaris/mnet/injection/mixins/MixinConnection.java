@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = Connection.class, priority = 6969)
+@Mixin(value = Connection.class, priority = 1049)
 public abstract class MixinConnection {
   @Shadow
   @Final
@@ -62,7 +62,9 @@ public abstract class MixinConnection {
   @Redirect(method = "disconnect(Lnet/minecraft/network/DisconnectionDetails;)V", at = @At(
       value = "INVOKE",
       target = "Lio/netty/channel/ChannelFuture;awaitUninterruptibly()Lio/netty/channel/ChannelFuture;"
-  ))
+  ),
+      require = 0
+  )
   private static ChannelFuture swapChannelClient(ChannelFuture instance) throws InterruptedException {
     return instance;
   }
