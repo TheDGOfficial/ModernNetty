@@ -36,64 +36,133 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = Connection.class, priority = 1049)
-public abstract class MixinConnection {
-  @Shadow
-  @Final
-  private static Logger LOGGER;
+public final class MixinConnection {
+    static {
+        ModernNetty.init();
+    }
 
-  @Redirect(method = "connect", at = @At(
-      value = "INVOKE",
-      target = "Lio/netty/bootstrap/Bootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/AbstractBootstrap;"
-  ))
-  private static AbstractBootstrap<Bootstrap, Channel> swapGroupClient(Bootstrap bootstrap, EventLoopGroup group) {
-    return bootstrap
-        .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-        .group(ModernNetty.GROUP_CLIENT.get());
-  }
+    @Shadow
+    @Final
+    private static Logger LOGGER;
 
-  @Redirect(method = "connect", at = @At(
-      value = "INVOKE",
-      target = "Lio/netty/bootstrap/Bootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
-  ))
-  private static AbstractBootstrap<Bootstrap, Channel> swapChannelClient(Bootstrap bootstrap, Class<? extends Channel> clazz) {
-    return bootstrap.channel(ModernNetty.CHANNEL_CLIENT);
-  }
+    @Redirect(
+            method = "connect",
+            at = @At(
+                    value = "INVOKE",
+                    target =
+                    "Lio/netty/bootstrap/Bootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/AbstractBootstrap;"
+            ),
+            require = 0
+    )
+    private static final AbstractBootstrap<Bootstrap, Channel>
+    connect$group(
+            final Bootstrap bootstrap,
+            final EventLoopGroup group
+    ) {
+        return ModernNetty.applyOptions(
+                bootstrap,
+                ModernNetty.GROUP_CLIENT.get()
+        );
+    }
 
-  @Redirect(method = "disconnect(Lnet/minecraft/network/DisconnectionDetails;)V", at = @At(
-      value = "INVOKE",
-      target = "Lio/netty/channel/ChannelFuture;awaitUninterruptibly()Lio/netty/channel/ChannelFuture;"
-  ),
-      require = 0
-  )
-  private static ChannelFuture swapChannelClient(ChannelFuture instance) throws InterruptedException {
-    return instance;
-  }
+    @Redirect(
+            method = "connect",
+            at = @At(
+                    value = "INVOKE",
+                    target =
+                    "Lio/netty/bootstrap/Bootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
+            ),
+            require = 0
+    )
+    private static final AbstractBootstrap<Bootstrap, Channel>
+    connect$channel(
+            final Bootstrap bootstrap,
+            final Class<? extends Channel> clazz
+    ) {
+        return bootstrap.channel(ModernNetty.CHANNEL_CLIENT);
+    }
 
-  @Redirect(method = "connectToLocalServer", at = @At(
-      value = "INVOKE",
-      target = "Lio/netty/bootstrap/Bootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/AbstractBootstrap;"
-  ))
-  private static AbstractBootstrap<Bootstrap, Channel> swapGroupServer(Bootstrap bootstrap, EventLoopGroup group) {
-    return bootstrap
-        .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-        .group(ModernNetty.GROUP_CLIENT_LOCAL.get());
-  }
+    @Redirect(
+        method = "connect",
+        at = @At(
+            value = "INVOKE",
+            target = "Lio/netty/bootstrap/Bootstrap;handler(Lio/netty/channel/ChannelHandler;)Lio/netty/bootstrap/AbstractBootstrap;"
+        ),
+        require = 0
+    )
+    private static final AbstractBootstrap<Bootstrap, Channel>
+    connect$handler(
+            final Bootstrap bootstrap,
+            final ChannelHandler handler
+    ) {
+        return ModernNetty.applyOptions(
+                bootstrap,
+                handler
+        );
+    }
 
-  @Redirect(method = "connectToLocalServer", at = @At(
-      value = "INVOKE",
-      target = "Lio/netty/bootstrap/Bootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
-  ))
-  private static AbstractBootstrap<Bootstrap, Channel> swapChannelServer(Bootstrap bootstrap, Class<? extends Channel> clazz) {
-    return bootstrap.channel(ModernNetty.CHANNEL_CLIENT_LOCAL);
-  }
+    @Redirect(
+            method = "disconnect(Lnet/minecraft/network/DisconnectionDetails;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target =
+                    "Lio/netty/channel/ChannelFuture;awaitUninterruptibly()Lio/netty/channel/ChannelFuture;"
+            ),
+            require = 0
+    )
+    private static final ChannelFuture disconnect$awaitUninterruptibly(
+            final ChannelFuture instance
+    ) {
+        return instance;
+    }
 
+    @Redirect(
+            method = "connectToLocalServer",
+            at = @At(
+                    value = "INVOKE",
+                    target =
+                    "Lio/netty/bootstrap/Bootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/AbstractBootstrap;"
+            )
+    )
+    private static final AbstractBootstrap<Bootstrap, Channel>
+    connectToLocalServer$group(
+            final Bootstrap bootstrap,
+            final EventLoopGroup group
+    ) {
+        return ModernNetty.applyOptions(
+                bootstrap,
+                ModernNetty.GROUP_CLIENT_LOCAL.get(),
+                true
+        );
+    }
 
-  @Inject(method = "exceptionCaught", at = @At(value = "HEAD"))
-  private void injectExceptionCaught(
-      ChannelHandlerContext context,
-      Throwable throwable,
-      CallbackInfo ci
-  ) {
-    LOGGER.warn("netty exception", throwable);
-  }
+    @Redirect(
+            method = "connectToLocalServer",
+            at = @At(
+                    value = "INVOKE",
+                    target =
+                    "Lio/netty/bootstrap/Bootstrap;channel(Ljava/lang/Class;)Lio/netty/bootstrap/AbstractBootstrap;"
+            )
+    )
+    private static final AbstractBootstrap<Bootstrap, Channel>
+    connectToLocalServer$channel(
+            final Bootstrap bootstrap,
+            final Class<? extends Channel> clazz
+    ) {
+        return bootstrap.channel(
+                ModernNetty.CHANNEL_CLIENT_LOCAL
+        );
+    }
+
+    @Inject(
+            method = "exceptionCaught",
+            at = @At("HEAD")
+    )
+    private final void exceptionCaught(
+            final ChannelHandlerContext context,
+            final Throwable throwable,
+            final CallbackInfo ci
+    ) {
+        LOGGER.warn("netty exception", throwable);
+    }
 }

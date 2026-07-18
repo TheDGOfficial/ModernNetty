@@ -2,11 +2,11 @@ import java.nio.charset.StandardCharsets
 
 plugins {
   id("java")
-  id("fabric-loom") version ("1.14-SNAPSHOT")
+  id("net.fabricmc.fabric-loom") version ("1.17.16")
 }
 
 group = "pet.liawr"
-version = "1.2.0-release"
+version = "1.3.0-release"
 
 repositories {
   mavenLocal()
@@ -18,8 +18,7 @@ dependencies {
   implementation(libs.annotations.get())
 
   minecraft("com.mojang:minecraft:${property("minecraft_version")}")
-  mappings(loom.officialMojangMappings())
-  modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
+  implementation("net.fabricmc:fabric-loader:${property("loader_version")}")
 
   val clazzLinux = arrayOf("linux-aarch_64", "linux-riscv64", "linux-x86_64")
   val clazzMac = arrayOf("osx-aarch_64", "osx-x86_64")
@@ -38,12 +37,13 @@ dependencies {
     nativeLinuxEpollDep,
     nativeLinuxIoUringDep,
     nativeMacKqueueDep,
-  ).forEach { implementation(it); include(it) }
+  ).forEach { implementation(it); /*include(it)*/ }
 }
 
 tasks.withType<JavaCompile> {
-  sourceCompatibility = JavaVersion.VERSION_21.toString()
-  targetCompatibility = JavaVersion.VERSION_21.toString()
+  options.release.set(26)
+  options.compilerArgs.addAll(listOf("-Xlint:all", "-g", "-parameters", "--enable-preview"))
+
   options.encoding = StandardCharsets.UTF_8.toString()
 }
 
