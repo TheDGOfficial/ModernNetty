@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8.7",
   "mixinextras": {
-    "minVersion": "0.5.4"
+    "minVersion": "0.5.5"
   },
   "package": "fyi.stellaris.mnet.injection.mixins",
   "compatibilityLevel": "JAVA_25",
