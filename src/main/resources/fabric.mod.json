@@ -30,7 +30,7 @@
     }
   ],
   "depends": {
-    "fabricloader": ">=0.19.5",
+    "fabricloader": ">=0.20.0",
     "minecraft": ">=26.2",
     "java": ">=27",
     "latestify": ">=1.2.0+26.2"
