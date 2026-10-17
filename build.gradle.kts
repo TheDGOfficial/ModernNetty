@@ -41,7 +41,7 @@ dependencies {
 }
 
 tasks.withType<JavaCompile> {
-  options.release.set(26)
+  options.release.set(27)
   options.compilerArgs.addAll(listOf("-Xlint:all", "-g", "-parameters", "--enable-preview"))
 
   options.encoding = StandardCharsets.UTF_8.toString()
