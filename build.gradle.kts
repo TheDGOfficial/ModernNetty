@@ -2,7 +2,7 @@ import java.nio.charset.StandardCharsets
 
 plugins {
   id("java")
-  id("net.fabricmc.fabric-loom") version ("1.18.2")
+  id("net.fabricmc.fabric-loom") version ("1.19-SNAPSHOT")
 }
 
 group = "pet.liawr"
